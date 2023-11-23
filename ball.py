@@ -2,7 +2,7 @@ from pico2d import *
 import game_world
 import game_framework
 import random
-
+import server
 
 class Ball:
     image = None
@@ -14,14 +14,18 @@ class Ball:
         self.y = y if y else random.randint(100, 924)
 
     def draw(self):
-        self.image.draw(self.x, self.y)
+        sx, sy = self.x - server.background.window_left, self.y - server.background.window_bottom
+        self.image.draw(sx, sy)
         draw_rectangle(*self.get_bb())
 
     def update(self):
+
         pass
 
     def get_bb(self):
-        return self.x - 10, self.y - 10, self.x + 10, self.y + 10
+        sx, sy = self.x - server.background.window_left, self.y - server.background.window_bottom
+
+        return sx - 10, sy - 10, sx + 10, sy + 10
 
     def handle_collision(self, group, other):
         pass

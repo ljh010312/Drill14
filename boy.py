@@ -2,12 +2,13 @@ import math
 
 from pico2d import get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, \
     SDLK_UP, SDLK_DOWN, \
-    draw_rectangle
+    draw_rectangle, get_canvas_width, get_canvas_height
 
 from ball import Ball
 import game_world
 import game_framework
 import server
+
 
 
 # state event check
@@ -274,12 +275,14 @@ class Boy:
         self.font = load_font('ENCR10B.TTF', 24)
         self.state_machine = StateMachine(self)
         self.state_machine.start()
-        # fill here
+        self.x = server.background.w // 2
+        self.y = server.background.h // 2
 
 
     def update(self):
         self.state_machine.update()
-        # fill here
+        self.x = clamp(50.0, self.x, server.background.w - 50.0)
+        self.y = clamp(50.0, self.y, server.background.h - 50.0)
 
 
     def handle_event(self, event):
@@ -287,10 +290,15 @@ class Boy:
 
     def draw(self):
         # fill here
+        sx, sy = self.x - server.background.window_left, self.y - server.background.window_bottom
+        self.image.clip_draw(int(self.frame) * 100, self.action * 100, 100, 100, sx, sy)
+        draw_rectangle(*self.get_bb())
         pass
 
     def get_bb(self):
-        return self.x - 20, self.y - 50, self.x + 20, self.y + 50
+        sx, sy = self.x - server.background.window_left, self.y - server.background.window_bottom
+        return sx - 20,sy - 50, sx + 20, sy + 50
 
     def handle_collision(self, group, other):
-        pass
+        if group == 'boy:ball':
+            game_world.remove_object(other)
